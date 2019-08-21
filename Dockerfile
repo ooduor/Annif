@@ -40,6 +40,8 @@ COPY --from=builder /usr/local/lib/python3.7 /usr/local/lib/python3.7
 
 ## Dependencies needed at runtime:
 RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		curl \
 	## Voikko:
 	&& apt-get install -y --no-install-recommends \
 		libvoikko1 \

@@ -1,4 +1,4 @@
-version: "3"
+version: "3.6"
 
 services:
 
@@ -16,6 +16,15 @@ services:
       placement:
         constraints:
         - node.labels.environment == test
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 15s
+      retries: 3
+      start_period: 10s
 
   nginx:
     image: nginx
