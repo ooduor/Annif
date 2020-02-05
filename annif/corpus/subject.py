@@ -16,7 +16,7 @@ class SubjectFileTSV:
     def _parse_line(self, line):
         vals = line.strip().split('\t', 2)
         clean_uri = annif.util.cleanup_uri(vals[0])
-        label = vals[1] if len(vals) >= 2 else ''
+        label = vals[1] if len(vals) >= 2 else None
         notation = vals[2] if len(vals) >= 3 else None
         yield Subject(uri=clean_uri, label=label, notation=notation, text=None)
 
@@ -57,6 +57,17 @@ class SubjectIndex:
         return (self._uris[subject_id], self._labels[subject_id],
                 self._notations[subject_id])
 
+    def append(self, uri, label, notation):
+        subject_id = len(self._uris)
+        self._uris.append(uri)
+        self._labels.append(label)
+        self._notations.append(notation)
+        self._uri_idx[uri] = subject_id
+        self._label_idx[label] = subject_id
+
+    def contains_uri(self, uri):
+        return uri in self._uris
+
     def by_uri(self, uri):
         """return the subject index of a subject by its URI"""
         try:
@@ -88,6 +99,12 @@ class SubjectIndex:
         return [self[subject_id][0]
                 for subject_id in (self.by_label(label) for label in labels)
                 if subject_id is not None]
+
+    def empty_labels(self):
+        """return subject indices of subjects with empty labels"""
+
+        return [subject_id for subject_id, label in enumerate(self._labels)
+                if label is None]
 
     def save(self, path):
         """Save this subject index into a file."""
